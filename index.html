@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculate Storage Charges</title>
+    <link rel="stylesheet" href="style.css">  </head>
+</head>
+<body>
+    <div class="container">
+    <h1>Storage Charges Calculator</h1>
+    <p class="info">Effective from 1st July 2024 onwards: <br>
+        </p>
+    <form id="storageForm">
+        <label for="weight">Weight (kg):</label>
+        <input type="number" min="0" id="weight" step="0.001" placeholder="Enter weight in kg" required><br><br>
+
+        <!-- <label for="arrival-time">Arrival Time:</label>
+        <input type="time" id="arrival-time" name="arrival-time" required><br><br>
+
+        <label for="arrival-date">Arrival Date:</label>
+        <input type="date" id="arrival-date" name="arrival-date" required><br><br> -->
+
+        <label for="airline">Airline:</label>
+        <select id="airline" name="airline" required>
+            <option value="">Select Airline</option>
+            <option value="WFS">WFS</option>
+            <option value="SWISSPORT">SWISSPORT</option>
+            <option value="IAG">IAG</option>
+        </select><br><br>
+
+        <label for="shipment-type">Shipment Type:</label>
+        <select id="shipment-type" name="shipment-type" required>
+            <option value="">Select Shipment Type</option>
+            <option value="General Cargo">General Cargo</option>
+            <option value="DG">DG</option>
+            <option value="Temp Controlled">Temp Controlled</option>
+            <option value="ULD&Cocoon">ULD&Cocoon</option>
+        </select><br><br>
+
+        <label for="num-ulds">Number of ULDs (if applicable):</label>
+        <input type="number" id="num-ulds" name="num-ulds" min="0"><br><br>
+
+        <label for="num-days">Number of Storage Days:</label>
+        <input type="number" id="num-days" name="num-days" min="0" required><br><br>
+
+        <!-- <button onclick="calculateTotalCharge()" type="button" >Calculate Total Charge</button> -->
+        <button type="submit">Calculate Total Charge</button>
+        <div id="totalCharge"></div>
+
+        <script src="script.js"></script>
+    </form>
+    </div>
+</body>
+</html>

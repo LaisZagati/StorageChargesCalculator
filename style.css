@@ -1,0 +1,145 @@
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+  margin: 10%;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.container {
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 400px;
+  text-align: center;
+}
+
+h1 {
+  color: #333;
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+h2 {
+  color: #555;
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+.info {
+  color: #f60303;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+input[type="number"],
+select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 18px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #45a049; 
+}
+
+#totalCharge {
+  margin-top: 30px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+
+#totalCharge {
+    font-family: Arial, sans-serif;
+    color: #333;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin-top: 20px;
+}
+
+#totalCharge strong {
+    font-size: 18px;
+    color: #2c3e50;
+}
+
+#totalCharge .charge-amount {
+    font-size: 18px;
+    color: #e74c3c;
+}
+
+#totalCharge .airline {
+    color: #3498db;
+}
+
+#totalCharge .shipment-type {
+    color: #9b59b6;
+}
+
+#totalCharge .weight {
+    color: #27ae60;
+}
+
+#totalCharge .ulds {
+    color: #f39c12;
+}
+
+#totalCharge .days-charged {
+    color: #16a085;
+}
+
+
+/* ULD Input Group */
+#uld-group {
+  display: none;
+}
+
+#shipment-type option[value="ULD"] {
+  display: none;
+}
+
+#shipment-type:checked + #uld-group {
+  display: block;
+}
+
+#shipment-type:checked + label + #shipment-type option[value="ULD"] {
+  display: block;
+}
+
+/* Responsive Styling (Optional) */
+@media (max-width: 450px) {
+  .container {
+    width: 90%;
+  }
+}
