@@ -175,7 +175,31 @@ function calculateWFSULDCocoon(weight, days, numULDs) {
     return totalCharge;
 }
 
+// SWISSPORT Calculations
+function calculateSWISSPORT(weight, days) {
+    const baseDailyRate = 0.258;
+    const baseMinCharge = 40.12;
+    const extraDailyRate = 0.515;
+    const extraMinCharge = 80.23;
 
+    let totalCharge = 0;
+
+    // Calculate charge for the first 3 days
+    if (days <= 3) {
+        // Charge is per day, so multiply by the number of days
+        totalCharge = Math.max(weight * baseDailyRate * days, baseMinCharge * days);
+    } else {
+        // Calculate charge for the first 3 days
+        const first3DaysCharge = Math.max(weight * baseDailyRate * 3, baseMinCharge * 3);
+        // Calculate charge for the extra days
+        const extraDays = days - 3;
+        const extraCharge = Math.max(weight * extraDailyRate * extraDays, extraMinCharge * extraDays);
+        // Sum of both charges
+        totalCharge = first3DaysCharge + extraCharge;
+    }
+
+    return totalCharge;
+}
 
 // IAG Calculations
 function calculateIAG(weight, days) {
