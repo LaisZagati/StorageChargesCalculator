@@ -1,7 +1,7 @@
 body {
   font-family: 'Arial', sans-serif;
   background-color: #f4f4f4;
-  margin: 0%;
+  margin: 10%;
   padding: 0;
   display: flex;
   justify-content: center;
@@ -52,7 +52,7 @@ select {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-  font-size: 1px;
+  font-size: 16px;
 }
 
 button {
