@@ -16,11 +16,11 @@
         <label for="weight">Weight (kg):</label>
         <input type="number" min="0" id="weight" step="0.001" placeholder="Enter weight in kg" required><br><br>
 
-        <!-- <label for="arrival-time">Arrival Time:</label>
-        <input type="time" id="arrival-time" name="arrival-time" required><br><br>
+        <label for="arrival-datetime">Arrival Date & Time:</label>
+        <input type="datetime-local" id="arrival-datetime" name="arrival-datetime" required><br><br>
 
-        <label for="arrival-date">Arrival Date:</label>
-        <input type="date" id="arrival-date" name="arrival-date" required><br><br> -->
+        <label for="recovery-datetime">Recovery Date & Time:</label>
+        <input type="datetime-local" id="recovery-datetime" name="recovery-datetime" required><br><br>
 
         <label for="airline">Airline:</label>
         <select id="airline" name="airline" required>
@@ -42,8 +42,8 @@
         <label for="num-ulds">Number of ULDs (if applicable):</label>
         <input type="number" id="num-ulds" name="num-ulds" min="0"><br><br>
 
-        <label for="num-days">Number of Storage Days:</label>
-        <input type="number" id="num-days" name="num-days" min="0" required><br><br>
+<!--         <label for="num-days">Number of Storage Days:</label>
+        <input type="number" id="num-days" name="num-days" min="0" required><br><br> -->
 
         <!-- <button onclick="calculateTotalCharge()" type="button" >Calculate Total Charge</button> -->
         <button type="submit">Calculate Total Charge</button>
