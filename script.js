@@ -18,39 +18,52 @@ function calculateTotalCharge() {
     const airline = document.getElementById('airline').value;
     const shipmentType = document.getElementById('shipment-type').value;
     const numULDs = parseInt(document.getElementById('num-ulds').value) || 0;
-    const numDays = parseInt(document.getElementById('num-days').value) || 0;
+    // const numDays = parseInt(document.getElementById('num-days').value) || 0;
 
 
-    console.log('Inputs:', { weight, airline, shipmentType, numULDs, numDays });
+    const arrivalDatetime = new Date(document.getElementById('arrival-datetime').value);
+    const recoveryDatetime = new Date(document.getElementById('recovery-datetime').value);
+
+    // Calculate the difference in time
+    const timeDiff = recoveryDatetime - arrivalDatetime;
+    const totalDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
+
+    // Exclude the first 24 hours
+    const effectiveDays = Math.max(totalDays - 1, 0);
 
 
-    if (numDays <= 0) {
-        alert("Number of storage days must be greater than zero.");
+    console.log('Inputs:', { weight, airline, shipmentType, numULDs, arrivalDatetime, recoveryDatetime, totalDays, effectiveDays});
+
+
+    if (effectiveDays <= 0) {
+        alert("Recovery Date & Time must be after Arrival Date & Time.");
         return;
     }
+
     let totalCharge = 0;
+
 
     // Calculate storage based on airline and shipment type
     if (airline === "WFS") {
         switch (shipmentType) {
             case "General Cargo":
-                totalCharge = calculateWFSGeneralCargo(weight, numDays);
+                totalCharge = calculateWFSGeneralCargo(weight, effectiveDays);
                 break;
             case "DG":
-                totalCharge = calculateWFSDG(weight, numDays);
+                totalCharge = calculateWFSDG(weight, effectiveDays);
                 break;
             case "Temp Controlled":
-                totalCharge = calculateWFSTempControlled(weight, numDays);
+                totalCharge = calculateWFSTempControlled(weight, effectiveDays);
                 break;
             case "ULD&Cocoon":
-                totalCharge = calculateWFSULDCocoon(weight, numDays, numULDs);
+                totalCharge = calculateWFSULDCocoon(weight, effectiveDays, numULDs);
                 break;
 
         }
     } else if (airline === "SWISSPORT") {
-        totalCharge = calculateSWISSPORT(weight, numDays);
+        totalCharge = calculateSWISSPORT(weight, effectiveDays);
     } else if (airline === "IAG") {
-        totalCharge = calculateIAG(weight, numDays);
+        totalCharge = calculateIAG(weight, effectiveDays);
     }
 
     // Apply minimum charge if necessary
@@ -68,7 +81,7 @@ function calculateTotalCharge() {
         <strong>Shipment Type:</strong> <span class="shipment-type">${shipmentType}</span><br>
         <strong>Weight:</strong> <span class="weight">${weight} kg</span><br>
         <strong>Number of ULDs:</strong> <span class="ulds">${numULDs}</span><br>
-        <strong>Number of Days Charged:</strong> <span class="days-charged">${numDays} days</span>
+        <strong>Effective Days Charged:</strong> <span class="days-charged">${effectiveDays} days</span>
     </div>
 `;
 
@@ -79,7 +92,6 @@ function calculateTotalCharge() {
 }
 
 
-
 // WFS Calculations
 
 function calculateWFSGeneralCargo(weight, days) {
@@ -88,7 +100,7 @@ function calculateWFSGeneralCargo(weight, days) {
 
     let totalCharge = 0;
 
-    // Calculate charge for the first 3 days
+    // Calculate charge for the first 72 hours
     const first72Hours = Math.min(days, 3);
     for (let i = 0; i < first72Hours; i++) {
         totalCharge += Math.max(weight * dailyRate, minCharge);
@@ -103,13 +115,15 @@ function calculateWFSGeneralCargo(weight, days) {
     return totalCharge;
 }
 
+
+
 function calculateWFSDG(weight, days) {
     const dailyRate = 0.41;
     const minCharge = 57.17;
 
     let totalCharge = 0;
 
-    // Calculate charge for the first 3 days
+    // Calculate charge for the first 72 hours
     const first72Hours = Math.min(days, 3);
     for (let i = 0; i < first72Hours; i++) {
         totalCharge += Math.max(weight * dailyRate, minCharge);
@@ -122,6 +136,7 @@ function calculateWFSDG(weight, days) {
     }
 
     return totalCharge;
+
 }
 
 
@@ -136,23 +151,20 @@ function calculateWFSTempControlled(weight, days) {
     let regularChargeTotal = 0; // To store the total for the regular charge period
     let doubleChargeTotal = 0;  // To store the total for the double charge period
 
-    // // Calculate the total days from arrival to recovery, counting partial days as full days
-    // const totalDays = Math.ceil((recoveryDatetime - arrivalDatetime) / (1000 * 60 * 60 * 24));
-    
-    // Determine effective days for charges after excluding the first 24 hours
-    const effectiveDaysAfter24Hours = Math.max(totalDays - 1, 0); // Subtracting the first 24 hours
+    // Charges start after the first 24 hours
+    const effectiveDays = Math.max(days - 1, 0); // Subtract the first 24 hours
 
-    // Calculate charge for the first 2 days (72 hours) at the normal rate
-    const first72HoursDays = Math.min(effectiveDaysAfter24Hours, 2);
-    for (let i = 0; i < first72HoursDays; i++) {
+    // Calculate charge for the first 2 days
+    const first2Days = Math.min(effectiveDays, 2);
+    for (let i = 0; i < first2Days; i++) {
         const dailyCharge = Math.max(weight * dailyRate, minCharge);
         regularChargeTotal += dailyCharge;
         totalCharge += dailyCharge;
     }
 
     // Calculate charge for the remaining days after 72 hours at double the daily rate
-    const doubleRateDays = Math.max(effectiveDaysAfter24Hours - 2, 0); // Days at double rate
-    for (let i = 0; i < doubleRateDays; i++) {
+    const remainingDays = Math.max(effectiveDays - 2, 0);
+    for (let i = 0; i < remainingDays; i++) {
         const dailyDoubleCharge = Math.max(weight * doubleDailyRate, doubleMinCharge);
         doubleChargeTotal += dailyDoubleCharge;
         totalCharge += dailyDoubleCharge;
@@ -161,7 +173,6 @@ function calculateWFSTempControlled(weight, days) {
     // Total charge is the sum of regular and double charges
     totalCharge = regularChargeTotal + doubleChargeTotal;
 
-    // Output for debugging
     console.log('Regular Charge Total:', regularChargeTotal.toFixed(2));
     console.log('Double Charge Total:', doubleChargeTotal.toFixed(2));
     console.log('Total Charge:', totalCharge.toFixed(2));
@@ -172,35 +183,67 @@ function calculateWFSTempControlled(weight, days) {
 
 
 
-function calculateWFSULDCocoon(weight, days, numULDs) {
+
+
+function calculateWFSULDCocoon(weight, numULDs, days) {
     const dailyRate = 0.284;
     const minCharge = 45.48;
+    const doubleDailyRate = dailyRate * 2;
+    const doubleMinCharge = minCharge * 2;
     const uldCharge = 112.24;
 
-    // Calculate charge for the first 3 days
-    const first3Days = Math.min(days, 3);
-    let first3DaysCharge = 0;
-    for (let i = 0; i < first3Days; i++) {
-        // Apply minimum charge for weight per day
-        first3DaysCharge += Math.max(weight * dailyRate, minCharge);
+    let totalCharge = 0;
+    let regularChargeTotal = 0; // To store the total for the regular charge period
+    let doubleChargeTotal = 0;  // To store the total for the double charge period
+
+
+    // // Calculate the total days from arrival to recovery, counting partial days as full days
+    // const totalDays = Math.ceil((recoveryDatetime - arrivalDatetime) / (1000 * 60 * 60 * 24));
+
+    
+    // Determine effective days for charges after excluding the first 24 hours
+    const effectiveDaysAfter24Hours = Math.max(days - 1, 0); // Subtracting the first 24 hours
+
+    // Calculate charge for the first 2 days (72 hours) at the normal rate
+    const first72HoursDays = Math.min(effectiveDaysAfter24Hours, 2);
+    for (let i = 0; i < first72HoursDays; i++) {
+        const dailyCharge = Math.max(weight * dailyRate, minCharge);
+        regularChargeTotal += dailyCharge;
+        totalCharge += dailyCharge;
     }
 
-    // Calculate charge for the days after 72 hours at double the daily rate
-    const extraDays = Math.max(days - 3, 0);
-    let extraCharge = 0;
-    for (let i = 0; i < extraDays; i++) {
-        // Apply minimum charge for weight per day, and double the daily rate
-        extraCharge += Math.max(weight * dailyRate * 2, minCharge * 2);
+
+    // Calculate charge for the remaining days after 72 hours at double the daily rate
+    const doubleRateDays = Math.max(effectiveDaysAfter24Hours - 2, 0); // Days at double rate
+    for (let i = 0; i < doubleRateDays; i++) {
+        const dailyDoubleCharge = Math.max(weight * doubleDailyRate, doubleMinCharge);
+        doubleChargeTotal += dailyDoubleCharge;
+        totalCharge += dailyDoubleCharge;
     }
 
-    // Calculate the ULD charge
+
+    // Calculate the ULD charge per day
     const uldTotalCharge = numULDs * uldCharge * days;
+    // totalCharge += uldTotalCharge; // Add the ULD charges to the total charge
 
-    // Total charge is the sum of the weight charge and ULD charge
-    const totalCharge = first3DaysCharge + extraCharge + uldTotalCharge;
+
+    // Total charge is the sum of regular and double charges
+    totalCharge = regularChargeTotal + doubleChargeTotal + uldTotalCharge
+
+
+    // Output for debugging
+    console.log('Regular Charge Total:', regularChargeTotal.toFixed(2));
+    console.log('Double Charge Total:', doubleChargeTotal.toFixed(2));
+    console.log('ULD Charge Total:', uldTotalCharge.toFixed(2));
+    console.log('Total Charge:', totalCharge.toFixed(2));
+
 
     return totalCharge;
 }
+
+
+
+
 
 // SWISSPORT Calculations
 function calculateSWISSPORT(weight, days) {
