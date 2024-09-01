@@ -124,23 +124,45 @@ function calculateWFSDG(weight, days) {
     return totalCharge;
 }
 
-function calculateWFSTempControlled(weight, days) {
+function calculateWFSTempControlled(weight, arrivalDatetime, recoveryDatetime) {
     const dailyRate = 0.284;
     const minCharge = 45.48;
+    const doubleDailyRate = dailyRate * 2;
+    const doubleMinCharge = minCharge * 2;
 
     let totalCharge = 0;
+    let regularChargeTotal = 0; // To store the total for the regular charge period
+    let doubleChargeTotal = 0;  // To store the total for the double charge period
 
-    // Calculate charge for the first 3 days
-    const first72Hours = Math.min(days, 3);
-    for (let i = 0; i < first72Hours; i++) {
-        totalCharge += Math.max(weight * dailyRate, minCharge);
+    // Calculate the total days from arrival to recovery, counting partial days as full days
+    const totalDays = Math.ceil((recoveryDatetime - arrivalDatetime) / (1000 * 60 * 60 * 24));
+    
+    // Determine effective days for charges after excluding the first 24 hours
+    const effectiveDaysAfter24Hours = Math.max(totalDays - 1, 0); // Subtracting the first 24 hours
+
+    // Calculate charge for the first 2 days (72 hours) at the normal rate
+    const first72HoursDays = Math.min(effectiveDaysAfter24Hours, 2);
+    for (let i = 0; i < first72HoursDays; i++) {
+        const dailyCharge = Math.max(weight * dailyRate, minCharge);
+        regularChargeTotal += dailyCharge;
+        totalCharge += dailyCharge;
     }
 
-    // Calculate charge for the days after 72 hours at double the daily rate
-    const extraDays = Math.max(days - 3, 0);
-    for (let i = 0; i < extraDays; i++) {
-        totalCharge += Math.max(weight * dailyRate * 2, minCharge * 2);
+    // Calculate charge for the remaining days after 72 hours at double the daily rate
+    const doubleRateDays = Math.max(effectiveDaysAfter24Hours - 2, 0); // Days at double rate
+    for (let i = 0; i < doubleRateDays; i++) {
+        const dailyDoubleCharge = Math.max(weight * doubleDailyRate, doubleMinCharge);
+        doubleChargeTotal += dailyDoubleCharge;
+        totalCharge += dailyDoubleCharge;
     }
+
+    // Total charge is the sum of regular and double charges
+    totalCharge = regularChargeTotal + doubleChargeTotal;
+
+    // Output for debugging
+    console.log('Regular Charge Total:', regularChargeTotal.toFixed(2));
+    console.log('Double Charge Total:', doubleChargeTotal.toFixed(2));
+    console.log('Total Charge:', totalCharge.toFixed(2));
 
     return totalCharge;
 }
