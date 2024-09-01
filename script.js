@@ -124,7 +124,9 @@ function calculateWFSDG(weight, days) {
     return totalCharge;
 }
 
-function calculateWFSTempControlled(weight, arrivalDatetime, recoveryDatetime) {
+
+
+function calculateWFSTempControlled(weight, days) {
     const dailyRate = 0.284;
     const minCharge = 45.48;
     const doubleDailyRate = dailyRate * 2;
@@ -134,8 +136,8 @@ function calculateWFSTempControlled(weight, arrivalDatetime, recoveryDatetime) {
     let regularChargeTotal = 0; // To store the total for the regular charge period
     let doubleChargeTotal = 0;  // To store the total for the double charge period
 
-    // Calculate the total days from arrival to recovery, counting partial days as full days
-    const totalDays = Math.ceil((recoveryDatetime - arrivalDatetime) / (1000 * 60 * 60 * 24));
+    // // Calculate the total days from arrival to recovery, counting partial days as full days
+    // const totalDays = Math.ceil((recoveryDatetime - arrivalDatetime) / (1000 * 60 * 60 * 24));
     
     // Determine effective days for charges after excluding the first 24 hours
     const effectiveDaysAfter24Hours = Math.max(totalDays - 1, 0); // Subtracting the first 24 hours
@@ -166,6 +168,9 @@ function calculateWFSTempControlled(weight, arrivalDatetime, recoveryDatetime) {
 
     return totalCharge;
 }
+
+
+
 
 function calculateWFSULDCocoon(weight, days, numULDs) {
     const dailyRate = 0.284;
