@@ -77,7 +77,7 @@ function calculateTotalCharge() {
     document.getElementById('totalCharge').innerHTML = `
     <div id="totalCharge">
         <strong>Total Charge:</strong> <span class="charge-amount">€${totalCharge.toFixed(2)}</span><br>
-        <strong>Airline:</strong> <span class="airline">${airline}</span><br>
+        <strong>Ground Handling Agent:</strong> <span class="airline">${airline}</span><br>
         <strong>Shipment Type:</strong> <span class="shipment-type">${shipmentType}</span><br>
         <strong>Weight:</strong> <span class="weight">${weight} kg</span><br>
         <strong>Number of ULDs:</strong> <span class="ulds">${numULDs}</span><br>
