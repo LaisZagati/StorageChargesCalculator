@@ -1,7 +1,8 @@
+/* Global Styles */
 body {
   font-family: 'Arial', sans-serif;
   background-color: #f4f4f4;
-  margin: 10%;
+  margin: 0;
   padding: 0;
   display: flex;
   justify-content: center;
@@ -9,117 +10,150 @@ body {
   min-height: 100vh;
 }
 
+/* Container */
 .container {
   background-color: #fff;
   padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
   text-align: center;
+}
+
+/* Headings */
+h1, h2 {
+  color: #333;
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
 }
 
 h1 {
-  color: #333;
-  font-size: 2.5em;
-  margin-bottom: 10px;
-  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
 }
 
 h2 {
-  color: #555;
-  font-size: 1.5em;
-  margin-bottom: 20px;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
+/* Info */
 .info {
-  color: #f60303;
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  text-align: center;
+  color: #e74c3c;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
 }
 
+/* Labels */
 label {
   display: block;
-  font-weight: bold;
-  margin-bottom: 8px;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #555;
 }
 
+/* Inputs and Selects */
 input[type="number"],
 input[type="datetime-local"],
 select {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
   box-sizing: border-box;
-  font-size: 16px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  background-color: #fff;
+  transition: border-color 0.3s ease;
 }
 
+input[type="number"]:focus,
+input[type="datetime-local"]:focus,
+select:focus {
+  border-color: #4CAF50;
+  outline: none;
+}
+
+/* Date Inputs */
+input[type="datetime-local"] {
+  font-size: 1rem;
+  padding: 12px;
+  background-color: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  color: #333;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+input[type="datetime-local"]::-webkit-datetime-edit {
+  font-family: 'Arial', sans-serif;
+}
+
+input[type="datetime-local"]:focus {
+  border-color: #4CAF50;
+  background-color: #fff;
+}
+
+/* Button */
 button {
   background-color: #4CAF50;
-  color: white;
-  padding: 15px 25px;
+  color: #fff;
+  padding: 14px;
   border: none;
-  border-radius: 3px;
+  border-radius: 6px;
   cursor: pointer;
-  width: 100%;
-  font-size: 18px;
+  font-size: 1rem;
   transition: background-color 0.3s ease;
+  margin-top: 1rem;
 }
 
 button:hover {
-  background-color: #45a049; 
+  background-color: #45a049;
 }
 
+/* Total Charge */
 #totalCharge {
-  margin-top: 30px;
-  font-size: 20px;
-  font-weight: bold;
+  font-family: 'Arial', sans-serif;
   color: #333;
-  text-align: center;
-}
-
-#totalCharge {
-    font-family: Arial, sans-serif;
-    color: #333;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    margin-top: 20px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  margin-top: 1.5rem;
 }
 
 #totalCharge strong {
-    font-size: 18px;
-    color: #2c3e50;
+  font-size: 1.2rem;
+  color: #2c3e50;
 }
 
 #totalCharge .charge-amount {
-    font-size: 18px;
-    color: #e74c3c;
+  font-size: 1.2rem;
+  color: #e74c3c;
 }
 
 #totalCharge .airline {
-    color: #3498db;
+  color: #3498db;
 }
 
 #totalCharge .shipment-type {
-    color: #9b59b6;
+  color: #9b59b6;
 }
 
 #totalCharge .weight {
-    color: #27ae60;
+  color: #27ae60;
 }
 
 #totalCharge .ulds {
-    color: #f39c12;
+  color: #f39c12;
 }
 
 #totalCharge .days-charged {
-    color: #16a085;
+  color: #16a085;
 }
-
 
 /* ULD Input Group */
 #uld-group {
@@ -138,9 +172,10 @@ button:hover {
   display: block;
 }
 
-/* Responsive Styling (Optional) */
+/* Responsive Styling */
 @media (max-width: 450px) {
   .container {
     width: 90%;
+    padding: 20px;
   }
 }
