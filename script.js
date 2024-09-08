@@ -18,30 +18,20 @@ function calculateTotalCharge() {
     const airline = document.getElementById('airline').value;
     const shipmentType = document.getElementById('shipment-type').value;
     const numULDs = parseInt(document.getElementById('num-ulds').value) || 0;
-    // const numDays = parseInt(document.getElementById('num-days').value) || 0;
-
 
     const arrivalDatetime = new Date(document.getElementById('arrival-datetime').value);
     const recoveryDatetime = new Date(document.getElementById('recovery-datetime').value);
 
-    // Calculate the difference in time
+    // Calculate the difference in time in milliseconds
     const timeDiff = recoveryDatetime - arrivalDatetime;
     const totalDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
 
-    // Exclude the first 24 hours
-    const effectiveDays = Math.max(totalDays - 1, 0);
+    // Directly use totalDays for General Cargo (no need to exclude first 24 hours)
+    const effectiveDays = totalDays;
 
-
-    console.log('Inputs:', { weight, airline, shipmentType, numULDs, arrivalDatetime, recoveryDatetime, totalDays, effectiveDays});
-
-
-    if (effectiveDays <= 0) {
-        alert("Recovery Date & Time must be after Arrival Date & Time.");
-        return;
-    }
+    console.log('Inputs:', { weight, airline, shipmentType, numULDs, arrivalDatetime, recoveryDatetime, totalDays, effectiveDays });
 
     let totalCharge = 0;
-
 
     // Calculate storage based on airline and shipment type
     if (airline === "WFS") {
@@ -58,7 +48,6 @@ function calculateTotalCharge() {
             case "ULD&Cocoon":
                 totalCharge = calculateWFSULDCocoon(weight, effectiveDays, numULDs);
                 break;
-
         }
     } else if (airline === "SWISSPORT") {
         totalCharge = calculateSWISSPORT(weight, effectiveDays);
@@ -69,9 +58,7 @@ function calculateTotalCharge() {
     // Apply minimum charge if necessary
     totalCharge = Math.max(totalCharge, getMinCharge(airline, shipmentType));
 
-
     console.log('Total Charge:', totalCharge);
-
 
     // Display total charge
     document.getElementById('totalCharge').innerHTML = `
@@ -83,31 +70,24 @@ function calculateTotalCharge() {
         <strong>Number of ULDs:</strong> <span class="ulds">${numULDs}</span><br>
         <strong>Effective Days Charged:</strong> <span class="days-charged">${effectiveDays} days</span>
     </div>
-`;
-
-
-    // // Clear the form inputs after calculation
-    // form.reset();
-
+    `;
 }
 
-
-// WFS Calculations
-
-function calculateWFSGeneralCargo(weight, days) {
+// WFS General Cargo Calculation (with no exclusion of first 24 hours)
+function calculateWFSGeneralCargo(weight, effectiveDays) {
     const dailyRate = 0.26;
     const minCharge = 39.33;
 
     let totalCharge = 0;
 
-    // Calculate charge for the first 72 hours
-    const first72Hours = Math.min(days, 3);
+    // Calculate charge for the first 72 hours (up to 3 days)
+    const first72Hours = Math.min(effectiveDays, 3);
     for (let i = 0; i < first72Hours; i++) {
         totalCharge += Math.max(weight * dailyRate, minCharge);
     }
 
     // Calculate charge for the days after 72 hours at double the daily rate
-    const extraDays = Math.max(days - 3, 0);
+    const extraDays = Math.max(effectiveDays - 3, 0);
     for (let i = 0; i < extraDays; i++) {
         totalCharge += Math.max(weight * dailyRate * 2, minCharge * 2);
     }
@@ -183,8 +163,6 @@ function calculateWFSTempControlled(weight, days) {
 
 
 
-
-
 function calculateWFSULDCocoon(weight, numULDs, days) {
     const dailyRate = 0.284;
     const minCharge = 45.48;
@@ -202,11 +180,11 @@ function calculateWFSULDCocoon(weight, numULDs, days) {
 
     
     // Determine effective days for charges after excluding the first 24 hours
-    const effectiveDaysAfter24Hours = Math.max(days - 1, 0); // Subtracting the first 24 hours
+    const effectiveDays = Math.max(days - 1, 0); // Subtracting the first 24 hours
 
     // Calculate charge for the first 2 days (72 hours) at the normal rate
-    const first72HoursDays = Math.min(effectiveDaysAfter24Hours, 2);
-    for (let i = 0; i < first72HoursDays; i++) {
+    const first2Days = Math.min(effectiveDays, 2);
+    for (let i = 0; i < first2Days; i++) {
         const dailyCharge = Math.max(weight * dailyRate, minCharge);
         regularChargeTotal += dailyCharge;
         totalCharge += dailyCharge;
@@ -214,8 +192,8 @@ function calculateWFSULDCocoon(weight, numULDs, days) {
 
 
     // Calculate charge for the remaining days after 72 hours at double the daily rate
-    const doubleRateDays = Math.max(effectiveDaysAfter24Hours - 2, 0); // Days at double rate
-    for (let i = 0; i < doubleRateDays; i++) {
+    const remainingDays = Math.max(effectiveDays - 2, 0); // Days at double rate
+    for (let i = 0; i < remainingDays; i++) {
         const dailyDoubleCharge = Math.max(weight * doubleDailyRate, doubleMinCharge);
         doubleChargeTotal += dailyDoubleCharge;
         totalCharge += dailyDoubleCharge;
@@ -240,8 +218,6 @@ function calculateWFSULDCocoon(weight, numULDs, days) {
 
     return totalCharge;
 }
-
-
 
 
 
