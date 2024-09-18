@@ -46,7 +46,7 @@ function calculateTotalCharge() {
                 totalCharge = calculateWFSTempControlled(weight, effectiveDays);
                 break;
             case "ULD&Cocoon":
-                totalCharge = calculateWFSULDCocoon(weight, effectiveDays, numULDs);
+                totalCharge = calculateWFSULDCocoon(weight, numULDs, effectiveDays);
                 break;
         }
     } else if (airline === "SWISSPORT") {
