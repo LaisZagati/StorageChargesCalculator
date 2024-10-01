@@ -273,8 +273,18 @@ function calculateSWISSPORT(weight, days) {
 function calculateIAG(weight, days) {
     const dailyRate = 0.25;
     const minCharge = 38.00;
-    return Math.max(weight * dailyRate * days, minCharge * days);
+    const totalCharge = Math.max(weight * dailyRate * days, minCharge * days);
+    
+    // Adding console logs at the end
+    console.log("Weight:", weight);
+    console.log("Days:", days);
+    console.log("Daily Rate:", dailyRate);
+    console.log("Min Charge:", minCharge);
+    console.log("Total Charge:", totalCharge);
+    
+    return totalCharge;
 }
+
 
 // Helper function to get minimum charge based on airline and shipment type
 function getMinCharge(airline, shipmentType) {
