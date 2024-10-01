@@ -244,8 +244,30 @@ function calculateSWISSPORT(weight, days) {
         totalCharge = first3DaysCharge + extraCharge;
     }
 
+     // Adding console logs at the end
+        console.log("Weight:", weight);
+        console.log("Days:", days);
+        console.log("Total Charge:", totalCharge);
+
+
+        // Log for first 3 days' charge
+        const first3DaysCharge = Math.max(weight * baseDailyRate * Math.min(3, days), baseMinCharge * Math.min(3, days));
+        console.log("First 3 Days Charge:", first3DaysCharge);
+
+
+        // Log for extra days and extra charge (if applicable)
+    if (days > 3) {
+        const extraDays = days - 3;
+        const extraCharge = Math.max(weight * extraDailyRate * extraDays, extraMinCharge * extraDays);
+        console.log("Extra Days:", extraDays);
+        console.log("Extra Charge:", extraCharge);
+    }
+
+
     return totalCharge;
 }
+
+
 
 // IAG Calculations
 function calculateIAG(weight, days) {
