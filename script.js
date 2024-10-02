@@ -307,7 +307,7 @@ function calculateWFSULDCocoon(weight, numULDs, days) {
 function calculateSWISSPORT(weight, arrivalDatetime, recoveryDatetime) {
     // Ensure valid Date
     const arrivalDate = new Date(arrivalDatetime);
-    const storageStartDatetime = calculateStorageStart(arrivalDate);  // This is your existing logic for start date
+    const storageStartDatetime = calculateStorageStart(arrivalDate);
     const timeDiff = recoveryDatetime - arrivalDate; // Time difference from arrival to recovery
 
     // Effective days charged from arrival date to recovery date
@@ -328,28 +328,18 @@ function calculateSWISSPORT(weight, arrivalDatetime, recoveryDatetime) {
     const arrivalTime = arrivalDate.getTime();
     const storageStartTime = storageStartDatetime.getTime();
 
-    // Determine when double charges begin (after 72 hours)
+    // Determine when double charges begin
     const doubleChargeStartTime = arrivalTime + (72 * 60 * 60 * 1000); // 72 hours in milliseconds
     const doubleChargeDays = Math.max(0, Math.floor((recoveryDatetime - doubleChargeStartTime) / (1000 * 60 * 60 * 24))); // Calculate double charge days
 
-    // Determine if arrival is on Friday (5), Saturday (6), or Sunday (0)
-    const arrivalDay = arrivalDate.getDay(); // Get the day of the week (0 - Sunday, 1 - Monday, etc.)
-
-    // Apply regular charge only if the arrival is on Monday (1), Tuesday (2), Wednesday (3), or Thursday (4)
-    if (arrivalDay === 1 || arrivalDay === 2 || arrivalDay === 3 || arrivalDay === 4) {
+    // Regular charge for the first day only
+    if (storageStartTime < recoveryDatetime) {
         regularChargeTotal = Math.max(weight * baseDailyRate, baseMinCharge);
-        console.log('Regular Charge Applied:', regularChargeTotal.toFixed(2));
-    } else {
-        console.log('No Regular Charge Applied (Friday, Saturday, Sunday)');
-        regularChargeTotal = 0;  // No regular charge for Friday, Saturday, or Sunday
     }
 
-    // Double charge is applied after 72 hours, regardless of the day
+    // Double charge for the days after 72 hours
     if (doubleChargeDays > 0) {
         doubleChargeTotal = Math.max(weight * extraDailyRate * doubleChargeDays, extraMinCharge * doubleChargeDays);
-        console.log('Double Charge Applied:', doubleChargeTotal.toFixed(2));
-    } else {
-        console.log('No Double Charge Applied (within 72 hours)');
     }
 
     totalCharge = regularChargeTotal + doubleChargeTotal;
