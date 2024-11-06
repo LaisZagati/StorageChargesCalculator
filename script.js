@@ -55,6 +55,11 @@ function calculateTotalCharge() {
         totalCharge = calculateIAG(weight, effectiveDays, arrivalDatetime, recoveryDatetime);
     }
 
+    // // Apply minimum charge if necessary
+    // totalCharge = Math.max(totalCharge, getMinCharge(airline, shipmentType));
+
+    // console.log('Total Charge:', totalCharge);
+
     console.log(`Total Charge before applying min charge: €${totalCharge}`);
 
     // Apply minimum charge only if the total charge is 0
@@ -90,8 +95,10 @@ function calculateStorageStart(arrivalDatetime) {
 
     switch (arrivalDay) {
         case 0: // Sunday
-        case 6: // Saturday
             storageStartDatetime.setDate(arrivalDatetime.getDate() + 3); // Wednesday
+            break;
+        case 6: // Saturday
+            storageStartDatetime.setDate(arrivalDatetime.getDate() + 4); // Wednesday
             break;
         case 1: // Monday
             storageStartDatetime.setDate(arrivalDatetime.getDate() + 2); // Wednesday
@@ -117,6 +124,9 @@ function calculateStorageStart(arrivalDatetime) {
 }
 
 
+
+
+
 function calculateWFSGeneralCargo(weight, arrivalDatetime, recoveryDatetime) {
     const arrivalDate = new Date(arrivalDatetime);
     const storageStartDatetime = calculateStorageStart(arrivalDate); // Calculate storage start date
@@ -125,8 +135,9 @@ function calculateWFSGeneralCargo(weight, arrivalDatetime, recoveryDatetime) {
     // Calculate effective days based on arrival to recovery time
     const effectiveDays = Math.ceil((recoveryDate - arrivalDate) / (1000 * 60 * 60 * 24)); 
 
-    // Calculate regular charges only for the storage start day
-    const isRegularChargeApplicable = storageStartDatetime <= recoveryDate;
+    // Determine the day of arrival
+    const arrivalDay = arrivalDate.getDay(); // 0 - Sunday, 1 - Monday, ..., 6 - Saturday
+
 
     // Calculate total charge
     const dailyRate = 0.26;
@@ -135,9 +146,14 @@ function calculateWFSGeneralCargo(weight, arrivalDatetime, recoveryDatetime) {
     let regularChargeTotal = 0;
     let doubleChargeTotal = 0;
 
-    // Regular charge for the first day after storage start
-    if (isRegularChargeApplicable) {
+    // Apply regular charge only if the arrival is on Monday (1), Tuesday (2), Wednesday (3), or Thursday (4)
+    // AND recovery happens after the storage start time (Wednesday 00:01 AM)
+    if ((arrivalDay === 1 || arrivalDay === 2 || arrivalDay === 3 || arrivalDay === 4) && recoveryDate >= storageStartDatetime) {
         regularChargeTotal = Math.max(weight * dailyRate, minCharge);
+        console.log('Regular Charge Applied:', regularChargeTotal.toFixed(2));
+    } else {
+        console.log('No Regular Charge Applied (before storage start or on Fri-Sun)');
+        regularChargeTotal = 0;  // No regular charge for Friday, Saturday, or Sunday, or if recovered before storage start
     }
 
     // Calculate double charge days
@@ -151,6 +167,7 @@ function calculateWFSGeneralCargo(weight, arrivalDatetime, recoveryDatetime) {
     }
 
     const totalCharge = regularChargeTotal + doubleChargeTotal;
+
 
     console.log(`Storage starts on: ${storageStartDatetime}`);
     console.log(`Effective Days Charged: ${effectiveDays}`);
@@ -166,13 +183,16 @@ function calculateWFSGeneralCargo(weight, arrivalDatetime, recoveryDatetime) {
 function calculateWFSDG (weight, arrivalDatetime, recoveryDatetime) {
     const arrivalDate = new Date(arrivalDatetime);
     const storageStartDatetime = calculateStorageStart(arrivalDate); // Calculate storage start date
-    const recoveryDate = new Date(recoveryDatetime);
+    const timeDiff = recoveryDatetime - arrivalDate; // Time difference from arrival to recovery
 
-    // Calculate effective days based on arrival to recovery time
-    const effectiveDays = Math.ceil((recoveryDate - arrivalDate) / (1000 * 60 * 60 * 24)); 
+    // Effective days charged from arrival date to recovery date
+    const effectiveDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // Convert to days
+    console.log(`Storage starts on: ${storageStartDatetime}`);
+    console.log(`Effective Days Charged: ${effectiveDays}`);
+
 
     // Calculate regular charges only for the storage start day
-    const isRegularChargeApplicable = storageStartDatetime <= recoveryDate;
+    const isRegularChargeApplicable = storageStartDatetime <= recoveryDatetime;
 
     // Calculate total charge
     const dailyRate = 0.41;
@@ -181,27 +201,41 @@ function calculateWFSDG (weight, arrivalDatetime, recoveryDatetime) {
     let regularChargeTotal = 0;
     let doubleChargeTotal = 0;
 
-    // Regular charge for the first day after storage start
-    if (isRegularChargeApplicable) {
-        regularChargeTotal = Math.max(weight * dailyRate, minCharge);
+     // Calculate charges
+    const arrivalTime = arrivalDate.getTime();
+    const storageStartTime = storageStartDatetime.getTime();
+
+    // Determine when double charges begin (after 72 hours)
+    const doubleChargeStartTime = arrivalTime + (72 * 60 * 60 * 1000); // 72 hours in milliseconds
+    const doubleChargeDays = Math.max(0, Math.ceil((recoveryDatetime - doubleChargeStartTime) / (1000 * 60 * 60 * 24))); // Calculate double charge days
+
+    // Determine if arrival is on Friday (5), Saturday (6), or Sunday (0)
+    const arrivalDay = arrivalDate.getDay(); // Get the day of the week (0 - Sunday, 1 - Monday, etc.)
+
+
+    // Apply regular charge only if the arrival is on Monday (1), Tuesday (2), Wednesday (3), or Thursday (4)
+    // AND recovery happens after the storage start time (Wednesday 00:01 AM)
+    if ((arrivalDay === 1 || arrivalDay === 2 || arrivalDay === 3 || arrivalDay === 4) && recoveryDatetime >= storageStartDatetime) {
+    regularChargeTotal = Math.max(weight * dailyRate, minCharge);
+    console.log('Regular Charge Applied:', regularChargeTotal.toFixed(2));
+    } else {
+    console.log('No Regular Charge Applied (before storage start or on Fri-Sun)');
+    regularChargeTotal = 0;  // No regular charge for Friday, Saturday, or Sunday, or if recovered before storage start
     }
 
-    // Calculate double charge days
-    const doubleChargeStartDate = new Date(arrivalDate);
-    doubleChargeStartDate.setHours(doubleChargeStartDate.getHours() + 72); // Add 72 hours to arrival date
 
-    // Check how many hours/days are considered for double charges
-    if (recoveryDate > doubleChargeStartDate) {
-        const doubleChargeDays = Math.ceil((recoveryDate - doubleChargeStartDate) / (1000 * 60 * 60 * 24));
-        doubleChargeTotal = Math.max(weight * dailyRate * 2, minCharge * 2) * doubleChargeDays;
+    // Double charge is applied after 72 hours, regardless of the day
+    if (doubleChargeDays > 0) {
+        doubleChargeTotal = Math.max(weight * dailyRate * 2, minCharge * 2)* doubleChargeDays;
+        console.log('Double Charge Applied:', doubleChargeTotal.toFixed(2));
+    } else {
+        console.log('No Double Charge Applied (within 72 hours)');
     }
+
 
     const totalCharge = regularChargeTotal + doubleChargeTotal;
 
-    console.log(`Storage starts on: ${storageStartDatetime}`);
-    console.log(`Effective Days Charged: ${effectiveDays}`);
     console.log('Regular Charge Total:', regularChargeTotal.toFixed(2));
-    console.log('Double Charge Total:', doubleChargeTotal.toFixed(2));
     console.log('Total Charge:', totalCharge.toFixed(2));
 
     return totalCharge;
@@ -262,6 +296,10 @@ function calculateWFSULDCocoon(weight, numULDs, days) {
     let regularChargeTotal = 0; // To store the total for the regular charge period
     let doubleChargeTotal = 0;  // To store the total for the double charge period
 
+
+    // // Calculate the total days from arrival to recovery, counting partial days as full days
+    // const totalDays = Math.ceil((recoveryDatetime - arrivalDatetime) / (1000 * 60 * 60 * 24));
+
     
     // Determine effective days for charges after excluding the first 24 hours
     const effectiveDays = Math.max(days - 1, 0); // Subtracting the first 24 hours
@@ -304,6 +342,9 @@ function calculateWFSULDCocoon(weight, numULDs, days) {
 }
 
 
+
+
+
 function calculateSWISSPORT(weight, arrivalDatetime, recoveryDatetime) {
     // Ensure valid Date
     const arrivalDate = new Date(arrivalDatetime);
@@ -330,7 +371,7 @@ function calculateSWISSPORT(weight, arrivalDatetime, recoveryDatetime) {
 
     // Determine when double charges begin
     const doubleChargeStartTime = arrivalTime + (72 * 60 * 60 * 1000); // 72 hours in milliseconds
-    const doubleChargeDays = Math.max(0, Math.floor((recoveryDatetime - doubleChargeStartTime) / (1000 * 60 * 60 * 24))); // Calculate double charge days
+    const doubleChargeDays = Math.max(0, Math.ceil((recoveryDatetime - doubleChargeStartTime) / (1000 * 60 * 60 * 24))); // Calculate double charge days
 
     // Regular charge for the first day only
     if (storageStartTime < recoveryDatetime) {
@@ -353,8 +394,6 @@ function calculateSWISSPORT(weight, arrivalDatetime, recoveryDatetime) {
 
 
 
-
-
 // IAG Calculations
 function calculateIAG(weight, days, arrivalDatetime, recoveryDatetime) {
     const storageStartDatetime = calculateStorageStart(arrivalDatetime); // Get the storage start date
@@ -364,6 +403,12 @@ function calculateIAG(weight, days, arrivalDatetime, recoveryDatetime) {
     console.log(`Storage starts on: ${storageStartDatetime}`);
     console.log(`Recovery Date: ${recoveryDatetime}`);
     console.log(`Effective Days Charged: ${effectiveDays}`);
+
+    //  // If recovery happens before the storage start, return 0 charge
+    //  if (recoveryDatetime < storageStartDatetime) {
+    //     console.log(`Recovery before storage start: No charges applied.`);
+    //     return 0; // No charge if recovery happens before the storage start date
+    // }
 
     const dailyRate = 0.25;
     const minCharge = 38.00;
