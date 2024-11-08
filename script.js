@@ -226,7 +226,7 @@ function calculateWFSDG (weight, arrivalDatetime, recoveryDatetime) {
 
     // Double charge is applied after 72 hours, regardless of the day
     if (doubleChargeDays > 0) {
-        doubleChargeTotal = Math.max(weight * dailyRate * 2, minCharge * 2)* doubleChargeDays;
+        doubleChargeTotal = Math.max(weight * dailyRate * 1, minCharge * 1)* doubleChargeDays;
         console.log('Double Charge Applied:', doubleChargeTotal.toFixed(2));
     } else {
         console.log('No Double Charge Applied (within 72 hours)');
