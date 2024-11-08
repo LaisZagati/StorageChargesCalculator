@@ -246,8 +246,8 @@ function calculateWFSDG (weight, arrivalDatetime, recoveryDatetime) {
 function calculateWFSTempControlled(weight, days) {
     const dailyRate = 0.284;
     const minCharge = 45.48;
-    const doubleDailyRate = dailyRate * 2;
-    const doubleMinCharge = minCharge * 2;
+    const doubleDailyRate = dailyRate * 1;
+    const doubleMinCharge = minCharge * 1;
 
     let totalCharge = 0;
     let regularChargeTotal = 0; // To store the total for the regular charge period
@@ -288,8 +288,8 @@ function calculateWFSTempControlled(weight, days) {
 function calculateWFSULDCocoon(weight, numULDs, days) {
     const dailyRate = 0.284;
     const minCharge = 45.48;
-    const doubleDailyRate = dailyRate * 2;
-    const doubleMinCharge = minCharge * 2;
+    const doubleDailyRate = dailyRate * 1;
+    const doubleMinCharge = minCharge * 1;
     const uldCharge = 112.24;
 
     let totalCharge = 0;
