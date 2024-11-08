@@ -163,7 +163,7 @@ function calculateWFSGeneralCargo(weight, arrivalDatetime, recoveryDatetime) {
     // Check how many hours/days are considered for double charges
     if (recoveryDate > doubleChargeStartDate) {
         const doubleChargeDays = Math.ceil((recoveryDate - doubleChargeStartDate) / (1000 * 60 * 60 * 24));
-        doubleChargeTotal = Math.max(weight * dailyRate * 2, minCharge * 2) * doubleChargeDays;
+        doubleChargeTotal = Math.max(weight * dailyRate * 1, minCharge * 1) * doubleChargeDays;
     }
 
     const totalCharge = regularChargeTotal + doubleChargeTotal;
