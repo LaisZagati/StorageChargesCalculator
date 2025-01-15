@@ -140,8 +140,8 @@ function calculateWFSGeneralCargo(weight, arrivalDatetime, recoveryDatetime) {
 
 
     // Calculate total charge
-    const dailyRate = 0.26;
-    const minCharge = 39.33;
+    const dailyRate = 0.273;
+    const minCharge = 41.30;
 
     let regularChargeTotal = 0;
     let doubleChargeTotal = 0;
@@ -195,8 +195,8 @@ function calculateWFSDG (weight, arrivalDatetime, recoveryDatetime) {
     const isRegularChargeApplicable = storageStartDatetime <= recoveryDatetime;
 
     // Calculate total charge
-    const dailyRate = 0.41;
-    const minCharge = 57.17;
+    const dailyRate = 0.431;
+    const minCharge = 60.03;
 
     let regularChargeTotal = 0;
     let doubleChargeTotal = 0;
@@ -244,8 +244,8 @@ function calculateWFSDG (weight, arrivalDatetime, recoveryDatetime) {
 
 
 function calculateWFSTempControlled(weight, days) {
-    const dailyRate = 0.284;
-    const minCharge = 45.48;
+    const dailyRate = 0.298;
+    const minCharge = 47.75;
     const doubleDailyRate = dailyRate * 1;
     const doubleMinCharge = minCharge * 1;
 
@@ -286,19 +286,15 @@ function calculateWFSTempControlled(weight, days) {
 
 
 function calculateWFSULDCocoon(weight, numULDs, days) {
-    const dailyRate = 0.284;
-    const minCharge = 45.48;
+    const dailyRate = 0.298;
+    const minCharge = 47.75;
     const doubleDailyRate = dailyRate * 1;
     const doubleMinCharge = minCharge * 1;
-    const uldCharge = 112.24;
+    const uldCharge = 117.85;
 
     let totalCharge = 0;
     let regularChargeTotal = 0; // To store the total for the regular charge period
     let doubleChargeTotal = 0;  // To store the total for the double charge period
-
-
-    // // Calculate the total days from arrival to recovery, counting partial days as full days
-    // const totalDays = Math.ceil((recoveryDatetime - arrivalDatetime) / (1000 * 60 * 60 * 24));
 
     
     // Determine effective days for charges after excluding the first 24 hours
@@ -356,10 +352,10 @@ function calculateSWISSPORT(weight, arrivalDatetime, recoveryDatetime) {
     console.log(`Storage starts on: ${storageStartDatetime}`);
     console.log(`Effective Days Charged: ${effectiveDays}`);
 
-    const baseDailyRate = 0.258; // Daily rate for regular charges
-    const baseMinCharge = 40.12;  // Minimum charge for regular charges
-    const extraDailyRate = 0.515;  // Daily rate for double charges
-    const extraMinCharge = 80.23;   // Minimum charge for double charges
+    const baseDailyRate = 0.275; // Daily rate for regular charges
+    const baseMinCharge = 42.80;  // Minimum charge for regular charges
+    const extraDailyRate = 0.55;  // Daily rate for double charges
+    const extraMinCharge = 85.61;   // Minimum charge for double charges
 
     let totalCharge = 0;
     let regularChargeTotal = 0;
@@ -404,12 +400,6 @@ function calculateIAG(weight, days, arrivalDatetime, recoveryDatetime) {
     console.log(`Recovery Date: ${recoveryDatetime}`);
     console.log(`Effective Days Charged: ${effectiveDays}`);
 
-    //  // If recovery happens before the storage start, return 0 charge
-    //  if (recoveryDatetime < storageStartDatetime) {
-    //     console.log(`Recovery before storage start: No charges applied.`);
-    //     return 0; // No charge if recovery happens before the storage start date
-    // }
-
     const dailyRate = 0.25;
     const minCharge = 38.00;
 
@@ -429,15 +419,15 @@ function getMinCharge(airline, shipmentType) {
     if (airline === "WFS") {
         switch (shipmentType) {
             case "General Cargo":
-                return 39.33;
+                return 41.30;
             case "DG":
-                return 57.17;
+                return 60.03;
             case "Temp Controlled":
             case "ULD&Cocoon":
-                return 45.48;
+                return 47.75;
         }
     } else if (airline === "SWISSPORT") {
-        return 40.12;
+        return 42.80;
     } else if (airline === "IAG") {
         return 38.00;
     }
